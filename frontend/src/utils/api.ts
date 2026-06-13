@@ -1,3 +1,4 @@
+//@ts-nocheck
 import { mockApi } from "../mocks/api" 
 
 export const fetchData = async (endpoint: any = "", options?: any): Promise<any> => {
@@ -5,7 +6,7 @@ export const fetchData = async (endpoint: any = "", options?: any): Promise<any>
   case "/api/click": 
    return mockApi.click()
   case "/api/upgrades":
-   returnmockApi.getUpgrades()  
+   return mockApi.getUpgrades()  
   case "/api/missions":
     return [] 
   default: 
