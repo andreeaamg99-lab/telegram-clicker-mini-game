@@ -1,47 +1,44 @@
-import React, { useState } from "react"
-import styles from "./Clicker.module.scss"
+import React, { useState, useEffect } from "react";
+import styles from "./Clicker.module.scss";
 
 type Props = {
   onClick: () => void;
   globalCoins: number;
-}
+  setGlobalCoins: React.Dispatch<React.SetStateAction<number>>;
+  energy: number;
+  setEnergy: React.Dispatch<React.SetStateAction<number>>;
+  maxEnergy: number;
+  isAutoClickerActive: boolean;
+};
 
-export const Clicker = ({ onClick, globalCoins }: Props) => {
-  const [localClicks, setLocalClicks] = useState(0)
-  const [isLoading, setIsLoading] = useState(false)
+export const Clicker = ({ 
+  onClick, 
+  globalCoins, 
+  setGlobalCoins, 
+  energy, 
+  setEnergy, 
+  maxEnergy,
+  isAutoClickerActive 
+}: Props) => {
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleClick = async () => {
-    onClick();
-    setLocalClicks((prev) => prev + 1)
-
-    if (localClicks + 1 >= 20) {
-      try {
-        setIsLoading(true)
-        const response = await fetch("/api/click", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ coins: globalCoins + 1 }), 
-        })
-        if (!response.ok) throw new Error("Failed to update coins")
-        setLocalClicks(0)
-      } catch (error) {
-        console.error("Error:", error)
-      } finally {
-        setIsLoading(false)
+  const handleLocalClick = async () => {
+    if (energy >= 1) {
+      setEnergy((prev) => Math.max(0, prev - 1));
+      setGlobalCoins((prev) => prev + 1);
+      if (onClick) {
+        onClick();
       }
+    } else {
+      alert("No energy left!");
     }
-  }
+  };
 
   return (
-    <div className={styles.clicker}>
-      <button 
-        className={styles.clickButton} 
-        onClick={handleClick}
-        disabled={isLoading}
-      >
+    <div className={styles.clickerContainer}>
+      <button className={styles.orangeClickBtn} onClick={handleLocalClick} disabled={isLoading}>
         Click Me!
       </button>
-      <p className={styles.coins}>Coins: {globalCoins}</p>
     </div>
-  )
-}
+  );
+};
