@@ -1,31 +1,36 @@
-import React, { useState } from "react"
-import styles from "./Upgrades.module.scss"
+import React from 'react';
+import styles from './Upgrades.module.scss';
 
-type Upgrade = {
-  id: number
-  name: string
-  cost: number
-}
+type Props = {
+  coins: number;
+  onBuyAutoClicker: () => void;
+  onBuyDoubleCoins: () => void;
+};
 
-export const Upgrades = () => {
-  const [upgrades, setUpgrades] = useState<Upgrade[]>([
-    { id: 1, name: "Auto Clicker", cost: 100 },
-    { id: 2, name: "Double Coins", cost: 200 },
-  ])
-
-  const handleBuyUpgrade = (id: number) => {
-    console.log(`Upgrade ${id} purchased`)
-  }
-
+export const Upgrades = ({ coins, onBuyAutoClicker, onBuyDoubleCoins }: Props) => {
   return (
     <div className={styles.upgrades}>
       <h3>Upgrades</h3>
-      {upgrades.map((upgrade) => (
-        <div key={upgrade.id} className={styles.upgrade}>
-          <span>{upgrade.name}</span>
-          <button onClick={() => handleBuyUpgrade(upgrade.id)}>Buy for {upgrade.cost} coins</button>
-        </div>
-      ))}
+      <div className={styles.upgradeItem}>
+        <span>Auto Clicker</span>
+        <button 
+          className={styles.buyButton} 
+          onClick={onBuyAutoClicker}
+          disabled={coins < 100}
+        >
+          Buy for 100 coins
+        </button>
+      </div>
+      <div className={styles.upgradeItem}>
+        <span>Double Coins</span>
+        <button 
+          className={styles.buyButton} 
+          onClick={onBuyDoubleCoins}
+          disabled={coins < 200}
+        >
+          Buy for 200 coins
+        </button>
+      </div>
     </div>
-  )
-}
+  );
+};
