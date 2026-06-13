@@ -1,70 +1,76 @@
-import React, { useState, useEffect } from "react"
-import { Clicker } from "./components/Clicker/Clicker"
-import ReactGA from "react-ga"
-import { type Metric, onCLS, onFID, onLCP } from "web-vitals"
-import "./styles/global.scss"
-import styles from "./App.module.scss"
-import { useTelegram } from "./hooks/useTelegram"
-import { MOCK_TELEGRAM } from "./utils/config"
-import { ResourceCounter } from "./components/ResourceCounter"
-import { MainObject } from "./components/MainObject"
-import { Payment } from "./components/Payment"
-import { ProgressBar } from "./components/ProgressBar"
-import { Upgrades } from "./components/Upgrades"
-
-const TRACKING_ID = "UA-XXXXXXXXX-X"
-ReactGA.initialize(TRACKING_ID)
+import React, { useState, useEffect } from "react";
+import { Clicker } from "./components/Clicker/Clicker";
 
 export const App = () => {
-  const { user, webApp, isTelegram } = useTelegram()
-
-  const [coins, setCoins] = useState(0)
-  const [crystals, setCrystals] = useState(0)
-  const [energy, setEnergy] = useState(100)
-  const [progress, setProgress] = useState(0)
-
-  const handleClick = () => {
-    setCoins((prev) => prev + 1)
-    setProgress((prev) => (prev + 1) % 100)
-  }
+  const [globalCoins, setGlobalCoins] = useState(0);
+  const [energy, setEnergy] = useState(100);
+  const [diamonds, setDiamonds] = useState(0);
+  const [isAutoClickerActive, setIsAutoClickerActive] = useState(false);
+  const maxEnergy = 100;
 
   useEffect(() => {
-    ReactGA.pageview(window.location.pathname + window.location.search)
-  }, [])
+    const interval = setInterval(() => {
+      setEnergy((prev) => (prev < maxEnergy ? prev + 1 : prev));
+    }, 2000);
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
-    const sendToGoogleAnalytics = ({ name, delta, id }: Metric) => {
-      ReactGA.event({
-        category: "Web Vitals",
-        action: name,
-        value: Math.round(name === "CLS" ? delta * 1000 : delta),
-        label: id,
-        nonInteraction: true,
-      })
+    let interval: any;
+    if (isAutoClickerActive) {
+      interval = setInterval(() => {
+        setGlobalCoins((prev) => prev + 2);
+      }, 1000);
     }
+    return () => clearInterval(interval);
+  }, [isAutoClickerActive]);
 
-    onCLS(sendToGoogleAnalytics)
-    onFID(sendToGoogleAnalytics)
-    onLCP(sendToGoogleAnalytics)
-  }, [])
+  const handleGlobalClick = () => {
+    if (Math.random() < 0.05) {
+      setDiamonds((prev) => prev + 1);
+    }
+  };
 
-  if (!isTelegram && !MOCK_TELEGRAM) {
-    return (
-      <div className={styles.error}>
-        <h1>Please open this app in Telegram.</h1>
-        <p>This application is designed to work only within Telegram Mini Apps.</p>
-      </div>
-    )
-  }
+  const handleBuyAutoClicker = () => {
+    if (globalCoins >= 100) {
+      setGlobalCoins((prev) => prev - 100);
+      setIsAutoClickerActive(true);
+    } else {
+      alert("Not enough coins! Need 100 coins.");
+    }
+  };
 
   return (
-    <div className={styles.gameScreen}>
-      <ResourceCounter coins={coins} crystals={crystals} energy={energy} />
-      <MainObject />
-      <Clicker onClick={handleClick} />
-      <Payment webApp={webApp} />
-      <ProgressBar progress={progress} />
-      <Upgrades />
+    <div style={{ padding: "20px", textAlign: "center", color: "white", fontFamily: "sans-serif", background: "#1a1a1a", minHeight: "100vh" }}>
+      <div style={{ display: "flex", justifyContent: "space-around", fontSize: "22px", marginBottom: "20px", fontWeight: "bold" }}>
+        <div>💰 {globalCoins}</div>
+        <div>💎 {diamonds}</div>
+        <div>⚡ {energy}/{maxEnergy}</div>
+      </div>
+
+      <div style={{ background: "#333", borderRadius: "10px", height: "20px", width: "80%", margin: "0 auto 30px auto", overflow: "hidden" }}>
+        <div style={{ background: "#4caf50", height: "100%", width: ${(energy / maxEnergy) * 100}%, transition: "width 0.2s ease" }}></div>
+      </div>
+
+      <Clicker 
+        onClick={handleGlobalClick}
+        globalCoins={globalCoins}
+        setGlobalCoins={setGlobalCoins}
+        energy={energy}
+        setEnergy={setEnergy}
+        maxEnergy={maxEnergy}
+        isAutoClickerActive={isAutoClickerActive}
+      />
+
+      <div style={{ marginTop: "40px" }}>
+        <button 
+          onClick={handleBuyAutoClicker} 
+          disabled={isAutoClickerActive}
+          style={{ padding: "12px 24px", fontSize: "18px", fontWeight: "bold", borderRadius: "8px", border: "none", backgroundColor: isAutoClickerActive ? "#555" : "#ff9800", color: "white", cursor: "pointer" }}
+        >
+          {isAutoClickerActive ? "Auto Clicker Active" : "Buy Auto Clicker (100 Coins)"}
+        </button>
+      </div>
     </div>
-  )
-}
+  );
+};
