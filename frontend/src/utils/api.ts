@@ -1,22 +1,19 @@
-import { MOCK_API } from "./config"
-import { mockApi } from "../mocks/api"
+import { mockApi } from "../mocks/api" 
 
-const API_BASE_URL = "https://telegram-clicker-mini-game.onrender.com/api"
 export const fetchData = async (endpoint: string, options?: RequestInit) => {
-  if (MOCK_API) {
-    // Use mocks in dev mode
-    switch (endpoint) {
-      case "/api/click":
-        return mockApi.click()
-      case "/api/upgrades":
-        return mockApi.getUpgrades()
-      case "/api/missions":
-        return mockApi.getMissions()
-      default:
-        throw new Error("Mock endpoint not found")
+ switch (endpoint) {  
+  case "/api/click": 
+   return mockApi.click()
+  case "/api/upgrades":
+   returnmockApi.getUpgrades()  
+  case "/api/missions":
+    return [] 
+  default: 
+    return { 
+      coins: 0,
+      crystals: 0,
+      energy: 100,
+      progress:0
     }
-  }
-
-  const response = await fetch(`${API_BASE_URL}${endpoint}`, options)
-  return response
+ }
 }
