@@ -59,13 +59,13 @@ const isMember = true
   }
 
   return (
-    <div className={styles.gameScreen}>
-      <ResourceCounter coins={coins} crystals={crystals} energy={energy} />
-      <MainObject />
-      <Clicker onClick={handleClick} />
-      <Payment webApp={webApp} />
+    <div className={styles.container}>
+      <ResourceCounter coins={coins} crystals={crystals}
       <ProgressBar progress={progress} />
-      <Upgrades />
+      <MainObject />
+      <Clicker setCoins={setCoins} setProgress={setProgress} />
+      <Upgrades coins={coins} setCoins={setCoins} />
+      <Payment
     </div>
-  )
-}
+  );
+};
