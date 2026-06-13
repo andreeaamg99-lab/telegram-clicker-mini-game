@@ -1,8 +1,7 @@
 import { MOCK_API } from "./config"
 import { mockApi } from "../mocks/api"
 
-const API_BASE_URL = "http://localhost:3000/api"
-
+const API_BASE_URL = "https://telegram-clicker-mini-game.onrender.com/api"
 export const fetchData = async (endpoint: string, options?: RequestInit) => {
   if (MOCK_API) {
     // Use mocks in dev mode
