@@ -65,7 +65,7 @@ const isMember = true
       <MainObject />
       <Clicker setCoins={setCoins} setProgress={setProgress} />
       <Upgrades coins={coins} setCoins={setCoins} />
-      <Payment
+      <Payment />
     </div>
   );
 };
