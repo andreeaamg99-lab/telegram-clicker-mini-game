@@ -11,16 +11,19 @@ import { Payment } from './components/Payment';
 export function App() {
   const [coins, setCoins] = useState(0);
   const [crystals, setCrystals] = useState(0);
+  const [energy, setEnergy] = useState(100); 
   const [progress, setProgress] = useState(0);
+
+  const mockWebApp = {} as any; 
 
   return (
     <div className={styles.container}>
-      <ResourceCounter coins={coins} crystals={crystals} />
+      <ResourceCounter coins={coins} crystals={crystals} energy={energy} />
       <ProgressBar progress={progress} />
       <MainObject />
-      <Clicker setCoins={setCoins} setProgress={setProgress} />
-      <Upgrades coins={coins} setCoins={setCoins} />
-      <Payment />
+      <Clicker />
+      <Upgrades />
+      <Payment webApp={mockWebApp} />
     </div>
   );
 }
