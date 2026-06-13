@@ -1,70 +1,80 @@
-import React, { useState, useEffect } from "react"
-import { Clicker } from "./components/Clicker/Clicker"
-import ReactGA from "react-ga"
-import { type Metric, onCLS, onFID, onLCP } from "web-vitals"
-import "./styles/global.scss"
-import styles from "./App.module.scss"
-import { useTelegram } from "./hooks/useTelegram"
-import { MOCK_TELEGRAM } from "./utils/config"
-import { ResourceCounter } from "./components/ResourceCounter"
-import { MainObject } from "./components/MainObject"
-import { Payment } from "./components/Payment"
-import { ProgressBar } from "./components/ProgressBar"
-import { Upgrades } from "./components/Upgrades"
-
-const TRACKING_ID = "UA-XXXXXXXXX-X"
-ReactGA.initialize(TRACKING_ID)
+import React, { useState, useEffect } from "react";
+import { Clicker } from "./components/Clicker/Clicker";
+import { ResourceCounter } from "./components/ResourceCounter/ResourceCounter";
+import { ProgressBar } from "./components/ProgressBar/ProgressBar";
+import { Upgrades } from "./components/Upgrades/Upgrades";
+import { Payment } from "./components/Payment/Payment";
 
 export const App = () => {
-  const { user, webApp, isTelegram } = useTelegram()
-
-  const [coins, setCoins] = useState(0)
-  const [crystals, setCrystals] = useState(0)
-  const [energy, setEnergy] = useState(100)
-  const [progress, setProgress] = useState(0)
-
-  const handleClick = () => {
-    setCoins((prev) => prev + 1)
-    setProgress((prev) => (prev + 1) % 100)
-  }
+  const [globalCoins, setGlobalCoins] = useState(0);
+  const [energy, setEnergy] = useState(100);
+  const [diamonds, setDiamonds] = useState(0);
+  const [isAutoClickerActive, setIsAutoClickerActive] = useState(false);
+  const maxEnergy = 100;
 
   useEffect(() => {
-    ReactGA.pageview(window.location.pathname + window.location.search)
-  }, [])
+    const interval = setInterval(() => {
+      setEnergy((prev) => (prev < maxEnergy ? prev + 1 : prev));
+    }, 2000);
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
-    const sendToGoogleAnalytics = ({ name, delta, id }: Metric) => {
-      ReactGA.event({
-        category: "Web Vitals",
-        action: name,
-        value: Math.round(name === "CLS" ? delta * 1000 : delta),
-        label: id,
-        nonInteraction: true,
-      })
+    let interval: any;
+    if (isAutoClickerActive) {
+      interval = setInterval(() => {
+        setGlobalCoins((prev) => prev + 2);
+      }, 1000);
     }
+    return () => clearInterval(interval);
+  }, [isAutoClickerActive]);
 
-    onCLS(sendToGoogleAnalytics)
-    onFID(sendToGoogleAnalytics)
-    onLCP(sendToGoogleAnalytics)
-  }, [])
+  const handleGlobalClick = () => {
+    if (energy >= 1) {
+      setEnergy((prev) => Math.max(0, prev - 1));
+      setGlobalCoins((prev) => prev + 1);
+      if (Math.random() < 0.05) {
+        setDiamonds((prev) => prev + 1);
+      }
+    } else {
+      alert("No energy left!");
+    }
+  };
 
-  if (!isTelegram && !MOCK_TELEGRAM) {
-    return (
-      <div className={styles.error}>
-        <h1>Please open this app in Telegram.</h1>
-        <p>This application is designed to work only within Telegram Mini Apps.</p>
-      </div>
-    )
-  }
+  const handleBuyAutoClicker = () => {
+    if (globalCoins >= 100) {
+      setGlobalCoins((prev) => prev - 100);
+      setIsAutoClickerActive(true);
+    } else {
+      alert("Not enough coins! Need 100 coins.");
+    }
+  };
 
   return (
-    <div className={styles.gameScreen}>
-      <ResourceCounter coins={coins} crystals={crystals} energy={energy} />
-      <MainObject />
-      <Clicker onClick={handleClick} />
-      <Payment webApp={webApp} />
-      <ProgressBar progress={progress} />
-      <Upgrades />
+    <div style={{ padding: "20px", color: "white", fontFamily: "sans-serif" }}>
+      <ResourceCounter 
+        coins={globalCoins} 
+        diamonds={diamonds} 
+        energy={energy} 
+      />
+      
+      <ProgressBar 
+        current={energy} 
+        max={maxEnergy} 
+      />
+
+      <Clicker 
+        onClick={handleGlobalClick}
+        globalCoins={globalCoins}
+      />
+
+      <Upgrades 
+        coins={globalCoins}
+        onBuyAutoClicker={handleBuyAutoClicker}
+        isAutoClickerActive={isAutoClickerActive}
+      />
+
+      <Payment />
     </div>
-  )
-}
+  );
+};
