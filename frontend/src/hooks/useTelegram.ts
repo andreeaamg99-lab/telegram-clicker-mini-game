@@ -25,7 +25,7 @@ export const useTelegram = () => {
       setIsTelegram(true)
       win.Telegram.WebApp.ready()
     } else if (!MOCK_TELEGRAM) {
-      window.location.href = "https://t.me/your_bot_username"
+      window.location.href = "https://t.me/+cb2basH4YSBkMzRk"
     }
   }, [])
 
