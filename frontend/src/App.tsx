@@ -1,64 +1,43 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
+import { Clicker } from "./components/Clicker/Clicker";
 
-import { ResourceCounter } from './components/ResourceCounter';
-import { ProgressBar } from './components/ProgressBar';
-import { MainObject } from './components/MainObject';
-import { Clicker } from './components/Clicker';
-import { Upgrades } from './components/Upgrades';
-import { Payment } from './components/Payment';
-
-export function App() {
-  const [coins, setCoins] = useState(0);
-  const [crystals, setCrystals] = useState(0);
-  const [energy, setEnergy] = useState(100); 
-  const [progress, setProgress] = useState(0);
-  
-  const [clickPower, setClickPower] = useState(1);
-  const [autoClickers, setAutoClickers] = useState(0);
+export default function App() {
+  const [globalCoins, setGlobalCoins] = useState(0);
+  const [energy, setEnergy] = useState(100);
+  const [diamonds, setDiamonds] = useState(0);
+  const [isAutoClickerActive, setIsAutoClickerActive] = useState(false);
+  const maxEnergy = 100;
 
   useEffect(() => {
-    if (autoClickers > 0) {
-      const interval = setInterval(() => {
-        setCoins(prev => prev + autoClickers);
-      }, 1000);
-      return () => clearInterval(interval);
-    }
-  }, [autoClickers]);
+    const interval = setInterval(() => {
+      setEnergy((prev) => (prev < maxEnergy ? prev + 1 : prev));
+    }, 2000);
+    return () => clearInterval(interval);
+  }, []);
 
-  const handleBuildClick = () => {
-    setCoins(prev => prev + clickPower);
-    setEnergy(prev => (prev > 0 ? prev - 1 : 0));
-    setProgress(prev => (prev >= 100 ? 0 : prev + 1));
-  };
-
-  const buyAutoClicker = () => {
-    if (coins >= 100) {
-      setCoins(prev => prev - 100);
-      setAutoClickers(prev => prev + 1);
+  const handleGlobalClick = () => {
+    if (Math.random() < 0.05) {
+      setDiamonds((prev) => prev + 1);
     }
   };
-
-  const buyDoubleCoins = () => {
-    if (coins >= 200) {
-      setCoins(prev => prev - 200);
-      setClickPower(prev => prev * 2);
-    }
-  };
-
-  const mockWebApp = {} as any; 
 
   return (
-    <div>
-      <ResourceCounter coins={coins} crystals={crystals} energy={energy} />
-      <ProgressBar progress={progress} />
-      <MainObject />
-      <Clicker onClick={handleBuildClick} globalCoins={coins} />
-      <Upgrades 
-        coins={coins} 
-        onBuyAutoClicker={buyAutoClicker} 
-        onBuyDoubleCoins={buyDoubleCoins} 
+    <div style={{ padding: "20px", textAlign: "center", color: "white", fontFamily: "sans-serif" }}>
+      <div style={{ display: "flex", justifyContent: "space-around", fontSize: "20px", marginBottom: "20px" }}>
+        <div>💰 Coins: {globalCoins}</div>
+        <div>💎 Diamonds: {diamonds}</div>
+        <div>⚡ Energy: {energy}/{maxEnergy}</div>
+      </div>
+
+      <Clicker 
+        onClick={handleGlobalClick}
+        globalCoins={globalCoins}
+        setGlobalCoins={setGlobalCoins}
+        energy={energy}
+        setEnergy={setEnergy}
+        maxEnergy={maxEnergy}
+        isAutoClickerActive={isAutoClickerActive}
       />
-      <Payment webApp={mockWebApp} />
     </div>
   );
 }
