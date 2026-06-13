@@ -16,7 +16,8 @@ const TRACKING_ID = "UA-XXXXXXXXX-X"
 ReactGA.initialize(TRACKING_ID)
 
 export const App = () => {
-  const { user, webApp, isTelegram } = useTelegram()
+const isMember = true
+ const { user, webApp, isTelegram } = useTelegram()
 
   const [coins, setCoins] = useState(0)
   const [crystals, setCrystals] = useState(0)
