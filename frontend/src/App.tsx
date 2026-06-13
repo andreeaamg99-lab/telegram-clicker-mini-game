@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Clicker } from "./components/Clicker/Clicker";
 
-export default function App() {
+export const App = () => {
   const [globalCoins, setGlobalCoins] = useState(0);
   const [energy, setEnergy] = useState(100);
   const [diamonds, setDiamonds] = useState(0);
@@ -40,4 +40,4 @@ export default function App() {
       />
     </div>
   );
-}
+};
