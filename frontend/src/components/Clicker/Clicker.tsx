@@ -1,14 +1,14 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import styles from "./Clicker.module.scss";
 
 type Props = {
   onClick: () => void;
   globalCoins: number;
-  setGlobalCoins: React.Dispatch<React.SetStateAction<number>>;
-  energy: number;
-  setEnergy: React.Dispatch<React.SetStateAction<number>>;
-  maxEnergy: number;
-  isAutoClickerActive: boolean;
+  setGlobalCoins?: React.Dispatch<React.SetStateAction<number>>;
+  energy?: number;
+  setEnergy?: React.Dispatch<React.SetStateAction<number>>;
+  maxEnergy?: number;
+  isAutoClickerActive?: boolean;
 };
 
 export const Clicker = ({ 
@@ -23,14 +23,22 @@ export const Clicker = ({
   const [isLoading, setIsLoading] = useState(false);
 
   const handleLocalClick = async () => {
-    if (energy >= 1) {
-      setEnergy((prev) => Math.max(0, prev - 1));
-      setGlobalCoins((prev) => prev + 1);
+    if (energy !== undefined && setEnergy) {
+      if (energy >= 1) {
+        setEnergy((prev) => Math.max(0, prev - 1));
+        if (setGlobalCoins) {
+          setGlobalCoins((prev) => prev + 1);
+        }
+        if (onClick) {
+          onClick();
+        }
+      } else {
+        alert("No energy left!");
+      }
+    } else {
       if (onClick) {
         onClick();
       }
-    } else {
-      alert("No energy left!");
     }
   };
 
