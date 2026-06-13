@@ -1,6 +1,6 @@
 import { mockApi } from "../mocks/api" 
 
-export const fetchData = async (endpoint: string, options?: any): Promise<any> => {
+export const fetchData = async (endpoint: any = "", options?: any): Promise<any> => {
  switch (endpoint) {  
   case "/api/click": 
    return mockApi.click()
